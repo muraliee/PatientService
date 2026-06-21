@@ -49,7 +49,7 @@ pipeline {
                                 echo '✓ Docker Image Built Successfully'
                                 docker images | grep ${DOCKER_REPO}
                             """
-                        }
+                        
                     } catch (Exception e) {
                         echo "✗ Docker Build Failed: ${e.message}"
                         throw e
