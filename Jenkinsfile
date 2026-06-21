@@ -3,9 +3,8 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'docker.io'
-        DOCKER_IMAGE_NAME = 'patient-service'
+        DOCKER_REPO = 'mohanck/patientservice'
         DOCKER_CREDENTIALS_ID = 'dockerhub-cred'
-        DOCKER_USERNAME = credentials('dockerhub-cred:username')
         BUILD_TAG = "${BUILD_NUMBER}"
         GIT_REPO_URL = 'https://github.com/yourusername/hospital-management-system.git'
         GIT_BRANCH = 'main'
@@ -45,10 +44,10 @@ pipeline {
                         dir('PatientService') {
                             sh """
                                 echo 'Building Docker image...'
-                                docker build -t ${DOCKER_IMAGE_NAME}:${BUILD_TAG} .
-                                docker tag ${DOCKER_IMAGE_NAME}:${BUILD_TAG} ${DOCKER_IMAGE_NAME}:latest
+                                docker build -t ${DOCKER_REPO}:${BUILD_TAG} .
+                                docker tag ${DOCKER_REPO}:${BUILD_TAG} ${DOCKER_REPO}:latest
                                 echo '✓ Docker Image Built Successfully'
-                                docker images | grep ${DOCKER_IMAGE_NAME}
+                                docker images | grep ${DOCKER_REPO}
                             """
                         }
                     } catch (Exception e) {
@@ -71,17 +70,13 @@ pipeline {
                                 echo 'Logging into DockerHub...'
                                 echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
 
-                                echo 'Tagging image for DockerHub...'
-                                docker tag ${DOCKER_IMAGE_NAME}:${BUILD_TAG} ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${BUILD_TAG}
-                                docker tag ${DOCKER_IMAGE_NAME}:latest ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
-
                                 echo 'Pushing image to DockerHub...'
-                                docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${BUILD_TAG}
-                                docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                                docker push ${DOCKER_REPO}:${BUILD_TAG}
+                                docker push ${DOCKER_REPO}:latest
 
                                 echo '✓ Docker Image Pushed Successfully to DockerHub'
-                                echo "Image pushed: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${BUILD_TAG}"
-                                echo "Latest tag: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:latest"
+                                echo "Image pushed: ${DOCKER_REPO}:${BUILD_TAG}"
+                                echo "Latest tag: ${DOCKER_REPO}:latest"
 
                                 echo 'Logging out from DockerHub...'
                                 docker logout
@@ -108,7 +103,7 @@ pipeline {
                 echo '✓ Pipeline Completed Successfully'
                 echo "========================================="
                 echo "Build Number: ${BUILD_NUMBER}"
-                echo "Docker Image: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${BUILD_TAG}"
+                echo "Docker Image: ${DOCKER_REPO}:${BUILD_TAG}"
                 echo "========================================="
             }
         }
