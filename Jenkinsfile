@@ -81,7 +81,7 @@ pipeline {
                                 echo 'Logging out from DockerHub...'
                                 docker logout
                             """
-                        
+                        }
                     } catch (Exception e) {
                         echo "✗ Docker Push Failed: ${e.message}"
                         throw e
