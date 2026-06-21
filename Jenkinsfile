@@ -6,7 +6,7 @@ pipeline {
         DOCKER_REPO = 'mohanck/patientservice'
         DOCKER_CREDENTIALS_ID = 'dockerhub-cred'
         BUILD_TAG = "${BUILD_NUMBER}"
-        GIT_REPO_URL = 'https://github.com/yourusername/hospital-management-system.git'
+        GIT_REPO_URL = 'https://github.com/muraliee/PatientService.git'
         GIT_BRANCH = 'main'
     }
 
