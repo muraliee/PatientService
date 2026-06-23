@@ -91,7 +91,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to AWS') {
+        stage('Deploy to ecs') {
             steps {
                 script {
                     echo '========== AWS Deployment Started =========='

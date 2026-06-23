@@ -6,7 +6,7 @@ TAG=${1:-latest}
 PROJECT="patient-service"
 
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-REGION=$(aws configure get region || echo us-east-1)
+REGION=$(aws configure get region || echo eu-north-1)
 REPO="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}"
 
 # Build

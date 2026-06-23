@@ -39,6 +39,7 @@ resource "aws_lb_target_group" "tg" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.this.id
+  target_type  = "ip"
   health_check {
     path                = "/api/v1/health"
     healthy_threshold   = 2
