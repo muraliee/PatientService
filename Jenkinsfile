@@ -5,6 +5,7 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_REPO = 'mohanck/patientservice'
         DOCKER_CREDENTIALS_ID = 'dockerhub-cred'
+        AWS_CREDENTIALS_ID = 'aws-cred'
         BUILD_TAG = "${BUILD_NUMBER}"
         GIT_REPO_URL = 'https://github.com/muraliee/PatientService.git'
         GIT_BRANCH = 'main'
@@ -84,6 +85,34 @@ pipeline {
                         }
                     } catch (Exception e) {
                         echo "✗ Docker Push Failed: ${e.message}"
+                        throw e
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to AWS') {
+            steps {
+                script {
+                    echo '========== AWS Deployment Started =========='
+                    try {
+                        withCredentials([usernamePassword(credentialsId: "${AWS_CREDENTIALS_ID}",
+                                                         usernameVariable: 'AWS_ACCESS_KEY_ID',
+                                                         passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                            dir('deployment/terraform') {
+                                sh """
+                                    echo 'Initializing Terraform...'
+                                    terraform init -input=false
+
+                                    echo 'Applying Terraform deployment...'
+                                    terraform apply -input=false -auto-approve \
+                                      -var=\"image_uri=${DOCKER_REPO}:${BUILD_TAG}\"
+                                """
+                            }
+                        }
+                        echo '✓ AWS Deployment Completed Successfully'
+                    } catch (Exception e) {
+                        echo "✗ AWS Deployment Failed: ${e.message}"
                         throw e
                     }
                 }
